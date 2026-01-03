@@ -1,10 +1,15 @@
 import * as vscode from 'vscode';
 
 export function activate(context: vscode.ExtensionContext) {
-    console.log('Void active: Fast Launch Mode.');
+    console.log('Void active: Secure Vault Mode.');
 
     let isVoidActive = true; 
     let statusBarItem: vscode.StatusBarItem;
+    let filesToScan: string[] = ["**/*.env*"]; 
+    
+    const fileCheckCache = new WeakMap<vscode.TextDocument, boolean>();
+    
+    const secretVault = new Map<string, string>();
 
     statusBarItem = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Right, 100);
     statusBarItem.command = 'vscode-void.toggle';
@@ -17,72 +22,137 @@ export function activate(context: vscode.ExtensionContext) {
         rangeBehavior: vscode.DecorationRangeBehavior.ClosedClosed
     });
 
-    function updateStatusBar(editor: vscode.TextEditor | undefined) {
-        if (!editor || !editor.document.fileName.includes('.env')) {
-            statusBarItem.hide();
-            return;
+    function refreshConfig() {
+        const config = vscode.workspace.getConfiguration('void');
+        filesToScan = config.get<string[]>('filesToScan') || [];
+        updateAllVisibleEditors(); 
+    }
+
+    function shouldScanFile(document: vscode.TextDocument): boolean {
+        if (fileCheckCache.has(document)) return fileCheckCache.get(document)!;
+        let isMatch = false;
+        for (const pattern of filesToScan) {
+            if (vscode.languages.match({ pattern }, document) > 0) {
+                isMatch = true;
+                break;
+            }
         }
-        
-        statusBarItem.text = isVoidActive ? '$(eye-closed) Void: On' : '$(eye) Void: Off';
-        statusBarItem.backgroundColor = isVoidActive ? undefined : new vscode.ThemeColor('statusBarItem.warningBackground');
-        statusBarItem.show();
+        fileCheckCache.set(document, isMatch);
+        return isMatch;
     }
 
     function decorate(editor: vscode.TextEditor) {
-        if (!editor.document.fileName.includes('.env')) {
+        if (!shouldScanFile(editor.document)) {
+            editor.setDecorations(voidDecorationType, []); 
             return;
         }
-
         if (!isVoidActive) {
             editor.setDecorations(voidDecorationType, []);
             return;
         }
 
         const text = editor.document.getText();
-        const regEx = /(^[A-Z0-9_]+)\s*=\s*(.*$)/gm;
+        const regEx = /(["']?[\w-]+["']?)\s*[:=]\s*(.*)/gm;
         const secretsToHide: vscode.DecorationOptions[] = [];
         
         let match;
         while ((match = regEx.exec(text))) {
-            const value = match[2];
+            let value = match[2]; 
+            if (value.endsWith(',')) value = value.slice(0, -1);
             if (!value || value.length < 2 || value === 'true' || value === 'false') continue;
 
-            const startPos = editor.document.positionAt(match.index + match[0].indexOf(value));
-            const endPos = editor.document.positionAt(match.index + match[0].length);
+            const matchStart = match.index + match[0].indexOf(value);
+            const startPos = editor.document.positionAt(matchStart);
+            const endPos = editor.document.positionAt(matchStart + value.length);
             secretsToHide.push({ range: new vscode.Range(startPos, endPos) });
         }
-
         editor.setDecorations(voidDecorationType, secretsToHide);
     }
 
+    vscode.languages.registerHoverProvider('*', {
+        provideHover(document, position, token) {
+            if (!shouldScanFile(document) || !isVoidActive) return;
+
+            const range = document.getWordRangeAtPosition(position, /(["']?[\w-]+["']?)\s*[:=]\s*(.*)/);
+            if (!range) return;
+
+            const text = document.getText(range);
+            const separator = text.includes('=') ? '=' : ':';
+            const parts = text.split(separator);
+            if (parts.length < 2) return;
+
+            const rawValue = parts.slice(1).join(separator).trim();
+            
+            let cleanValue = rawValue;
+            if (cleanValue.endsWith(',')) cleanValue = cleanValue.slice(0, -1);
+            if ((cleanValue.startsWith('"') && cleanValue.endsWith('"')) || (cleanValue.startsWith("'") && cleanValue.endsWith("'"))) {
+                cleanValue = cleanValue.slice(1, -1);
+            }
+
+
+            const tokenId = `void_${Math.random().toString(36).substr(2, 9)}`;
+            
+            secretVault.set(tokenId, cleanValue);
+
+            const args = encodeURIComponent(JSON.stringify([tokenId]));
+            const commandUri = vscode.Uri.parse(`command:vscode-void.copySecret?${args}`);
+
+            const md = new vscode.MarkdownString(`**Hidden Value** \n\n [Copy](${commandUri})`);
+            md.isTrusted = true;
+            
+            return new vscode.Hover(md);
+        }
+    });
+
+    const copyCommand = vscode.commands.registerCommand('vscode-void.copySecret', (tokenId: string) => {
+        const secret = secretVault.get(tokenId);
+
+        if (secret) {
+            vscode.env.clipboard.writeText(secret);
+            vscode.window.setStatusBarMessage('Secret copied', 2000); 
+            
+            secretVault.delete(tokenId);
+        } else {
+            vscode.window.setStatusBarMessage('Error: Token expired', 2000);
+        }
+    });
+    context.subscriptions.push(copyCommand);
+
     function updateAllVisibleEditors() {
-        vscode.window.visibleTextEditors.forEach(editor => {
-            decorate(editor);
-        });
+        vscode.window.visibleTextEditors.forEach(editor => decorate(editor));
         updateStatusBar(vscode.window.activeTextEditor);
     }
 
+    function updateStatusBar(editor: vscode.TextEditor | undefined) {
+        if (!editor || !shouldScanFile(editor.document)) {
+            statusBarItem.hide();
+            return;
+        }
+        statusBarItem.text = isVoidActive ? 'Void: On' : 'Void: Off';
+        statusBarItem.show();
+    }
 
-    updateAllVisibleEditors();
+    refreshConfig();
+    
+    vscode.workspace.onDidChangeConfiguration(e => {
+        if (e.affectsConfiguration('void.filesToScan')) refreshConfig();
+    });
 
     vscode.window.onDidChangeActiveTextEditor(editor => {
         updateStatusBar(editor);
         if (editor) decorate(editor);
     }, null, context.subscriptions);
 
-    vscode.workspace.onDidChangeTextDocument(event => {
-        vscode.window.visibleTextEditors.forEach(editor => {
-            if (editor.document === event.document) {
-                decorate(editor);
-            }
-        });
+    vscode.workspace.onDidChangeTextDocument(e => {
+        if (vscode.window.activeTextEditor && e.document === vscode.window.activeTextEditor.document) {
+            decorate(vscode.window.activeTextEditor);
+        }
     }, null, context.subscriptions);
 
-    const toggleCommand = vscode.commands.registerCommand('vscode-void.toggle', () => {
+    context.subscriptions.push(vscode.commands.registerCommand('vscode-void.toggle', () => {
         isVoidActive = !isVoidActive;
         updateAllVisibleEditors();
-    });
-    context.subscriptions.push(toggleCommand);
+    }));
 }
 
 export function deactivate() {}
