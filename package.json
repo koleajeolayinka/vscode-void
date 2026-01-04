@@ -1,9 +1,10 @@
 {
   "name": "vscode-void",
-  "displayName": "Void",
+  "publisher": "koleajeolayinka",
+  "displayName": "Void: Secure Screen Blur",
   "description": "Automatically hides secret keys to prevent accidental leaks when sharing your screen",
-  "version": "0.0.1",
-  "icon": "icon.png",
+  "version": "0.0.2",
+  "icon": "icon.jpg",
   "engines": {
     "vscode": "^1.106.1"
   },
