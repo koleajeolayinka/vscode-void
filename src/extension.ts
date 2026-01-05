@@ -1,7 +1,6 @@
 import * as vscode from 'vscode';
 
 export function activate(context: vscode.ExtensionContext) {
-    console.log('Void active: Secure Vault Mode.');
 
     let isVoidActive = true; 
     let statusBarItem: vscode.StatusBarItem;

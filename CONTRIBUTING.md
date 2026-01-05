@@ -16,8 +16,8 @@ You need the following installed on your machine:
 1.  **Fork** the repository on GitHub.
 2.  **Clone** your fork to your local machine:
     ```bash
-    git clone https://github.com/koleajeolayinka/void-vscode.git
-    cd void-vscode
+    git clone https://github.com/koleajeolayinka/vscode-void.git
+    cd vscode-void
     ```
 3.  **Install dependencies**:
     ```bash

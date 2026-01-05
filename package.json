@@ -3,7 +3,7 @@
   "publisher": "koleajeolayinka",
   "displayName": "Void: Secure Screen Blur",
   "description": "Automatically hides secret keys to prevent accidental leaks when sharing your screen",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "icon": "icon.jpg",
   "engines": {
     "vscode": "^1.106.1"
@@ -15,6 +15,10 @@
     "*"
   ],
   "main": "./dist/extension.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/koleajeolayinka/vscode-void"
+},
   "contributes": {
     "commands": [
       {
