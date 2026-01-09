@@ -8,8 +8,6 @@ let isEnabled = true;
 const secretVault = new Map<string, string>();
 
 // The Visual Style: Frosted Glass Blur
-// Note: We use 'textDecoration' to inject the text-shadow CSS because VS Code
-// doesn't support 'textShadow' as a direct property.
 const blurDecorationType = vscode.window.createTextEditorDecorationType({
 	color: 'transparent',
 	cursor: 'pointer',
@@ -39,7 +37,6 @@ function getAllPatterns(): RegExp[] {
 
 	customStrings.forEach(patternStr => {
 		try {
-			// Users might type invalid regex, so we wrap in try/catch
 			customRegexes.push(new RegExp(patternStr, 'g'));
 		} catch (e) {
 			console.warn(`[Void] Invalid custom pattern ignored: ${patternStr}`);
@@ -52,9 +49,26 @@ function getAllPatterns(): RegExp[] {
 // --- Helper: Check if file should be scanned ---
 function shouldScanFile(document: vscode.TextDocument): boolean {
 	const config = vscode.workspace.getConfiguration('void');
-	const allowedPatterns: string[] = config.get('filesToScan') || ['**/.env*', '**/*.json', '**/*.yaml', '**/*.yml'];
 	
-	// Check against the glob patterns
+	// 1. Check Exclusions FIRST (Safety Valve)
+	// These files are NEVER blurred, regardless of mode.
+	const excludedPatterns: string[] = config.get('excludedFiles') || [];
+	const isExcluded = excludedPatterns.some(pattern => 
+		vscode.languages.match({ pattern: pattern, scheme: 'file' }, document) > 0
+	);
+
+	if (isExcluded) {
+		return false;
+	}
+
+	// 2. If mode is "Blur All", we scan everything that isn't excluded
+	const blurMode = config.get('blurMode') || 'all';
+	if (blurMode === 'all') {
+		return true;
+	}
+
+	// 3. If mode is "Secrets", we only scan specific files
+	const allowedPatterns: string[] = config.get('filesToScan') || ['**/.env*', '**/*.json', '**/*.yaml', '**/*.yml'];
 	return allowedPatterns.some(pattern => 
 		vscode.languages.match({ pattern: pattern, scheme: 'file' }, document) > 0
 	);
@@ -71,18 +85,19 @@ function updateDecorations(activeEditor: vscode.TextEditor) {
 
 	const doc = activeEditor.document;
 
-	// Optimization: Skip large files or unsupported files
+	// Optimization: Skip large files (>5000 lines) or excluded files
 	if (doc.lineCount > 5000 || !shouldScanFile(doc)) {
+		// Ensure we clear decorations if the file was previously blurred but is now excluded
+		activeEditor.setDecorations(blurDecorationType, []);
 		return;
 	}
 
 	const config = vscode.workspace.getConfiguration('void');
-	const blurMode = config.get('blurMode') || 'all'; // Default to 'all' if undefined
+	const blurMode = config.get('blurMode') || 'all';
 	const secretsToBlur: vscode.DecorationOptions[] = [];
 
 	// --- MODE 1: Blur Everything ---
 	if (blurMode === 'all') {
-		// Iterate through every line and blur it if it has text
 		for (let i = 0; i < doc.lineCount; i++) {
 			const line = doc.lineAt(i);
 			if (!line.isEmptyOrWhitespace) {
@@ -93,7 +108,7 @@ function updateDecorations(activeEditor: vscode.TextEditor) {
 			}
 		}
 		activeEditor.setDecorations(blurDecorationType, secretsToBlur);
-		return; // Stop here, no need to scan for regex
+		return;
 	}
 
 	// --- MODE 2: Blur Secrets Only ---
@@ -111,15 +126,12 @@ function updateDecorations(activeEditor: vscode.TextEditor) {
 			const secretId = `secret_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
 			secretVault.set(secretId, match[0]);
 
-			// Create the decoration with the secret ID attached
 			const decoration: vscode.DecorationOptions = {
 				range,
 				hoverMessage: new vscode.MarkdownString(`**🔒 Void:** Secret Hidden\n\n[$(clippy) Copy to Clipboard](command:void.copySecret?${JSON.stringify(secretId)})`)
 			};
 
-			// Allow executing commands in Markdown
 			(decoration.hoverMessage as vscode.MarkdownString).isTrusted = true;
-
 			secretsToBlur.push(decoration);
 		}
 	}
@@ -129,7 +141,7 @@ function updateDecorations(activeEditor: vscode.TextEditor) {
 
 // --- Main Activation ---
 export function activate(context: vscode.ExtensionContext) {
-	console.log('Void is active.');
+	console.log('Void is active (v0.0.5).');
 
 	// 1. Register the Status Bar Item
 	statusBarItem = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Right, 100);
@@ -142,7 +154,6 @@ export function activate(context: vscode.ExtensionContext) {
 		isEnabled = !isEnabled;
 		updateStatusBar();
 		
-		// Trigger update for all visible editors
 		vscode.window.visibleTextEditors.forEach(editor => updateDecorations(editor));
 		
 		vscode.window.showInformationMessage(
@@ -151,7 +162,7 @@ export function activate(context: vscode.ExtensionContext) {
 	});
 	context.subscriptions.push(toggleCommand);
 
-	// 3. Register Copy Command (Safe Vault Access)
+	// 3. Register Copy Command
 	const copyCommand = vscode.commands.registerCommand('void.copySecret', async (secretId: string) => {
 		const realSecret = secretVault.get(secretId);
 		if (realSecret) {
@@ -175,7 +186,7 @@ export function activate(context: vscode.ExtensionContext) {
 			if (activeEditor) {
 				updateDecorations(activeEditor);
 			}
-		}, 200); // 200ms debounce
+		}, 200);
 	};
 
 	vscode.window.onDidChangeActiveTextEditor(editor => {
@@ -191,12 +202,13 @@ export function activate(context: vscode.ExtensionContext) {
 		}
 	}, null, context.subscriptions);
 
-	// Listen for configuration changes
+	// Listen for ANY configuration change that affects display
 	vscode.workspace.onDidChangeConfiguration(event => {
 		if (
 			event.affectsConfiguration('void.customPatterns') || 
 			event.affectsConfiguration('void.filesToScan') ||
-			event.affectsConfiguration('void.blurMode')
+			event.affectsConfiguration('void.blurMode') ||
+			event.affectsConfiguration('void.excludedFiles') // <--- New Listener
 		) {
 			vscode.window.visibleTextEditors.forEach(updateDecorations);
 		}
