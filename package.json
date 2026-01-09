@@ -2,7 +2,7 @@
   "name": "vscode-void",
   "displayName": "Void",
   "description": "Securely blur sensitive information (API keys, tokens, .env files) in your editor.",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "publisher": "your-publisher-name",
   "engines": {
     "vscode": "^1.80.0"
@@ -40,6 +40,20 @@
           "default": "all",
           "description": "Choose 'secrets' to blur only detected patterns, or 'all' to blur the entire file content."
         },
+        "void.excludedFiles": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "default": [
+            "**/*.md",
+            "**/*.txt",
+            "**/package-lock.json",
+            "**/yarn.lock",
+            "**/.git/**/*"
+          ],
+          "description": "Glob patterns for files that should NEVER be blurred (e.g., documentation, lock files)."
+        },
         "void.filesToScan": {
           "type": "array",
           "items": {
@@ -53,7 +67,7 @@
             "**/*.xml",
             "**/*.config"
           ],
-          "description": "Glob patterns for files that should be protected by Void."
+          "description": "Glob patterns for files that should be protected when in 'secrets' mode."
         },
         "void.customPatterns": {
           "type": "array",
