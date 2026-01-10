@@ -2,7 +2,6 @@
 
 **Void** is a privacy-focused extension that blurs sensitive information in your editor. Whether you are screen-sharing, live streaming, or working in a public cafe, Void ensures your secrets (and code) remain private.
 
-![Void Demo](https://placehold.co/600x400?text=Void+Extension+Demo)
 
 ## 🚀 Key Features
 
