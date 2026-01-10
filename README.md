@@ -1,31 +1,42 @@
-# Void - Visual Studio Code Extension
+# Void for VS Code
 
-Void is a Visual Studio Code extension that helps you keep your sensitive information safe. It automatically hides secret keys, API tokens, and other credentials directly within your editor. This prevents accidental leaks when you're screen sharing, recording demos, or collaborating with others.
+**Void** is a privacy-focused extension that blurs sensitive information in your editor. Whether you are screen-sharing, live streaming, or working in a public cafe, Void ensures your secrets (and code) remain private.
 
-## Features
+![Void Demo](https://placehold.co/600x400?text=Void+Extension+Demo)
 
-- **Automatic Secret Obfuscation**: Void intelligently detects and hides sensitive information in your open files.
-- **Toggle Visibility**: Easily toggle the visibility of your secrets when you need to view or edit them.
-- **Customizable Configuration**: Define what patterns to hide and create custom rules for your projects.
+## 🚀 Key Features
 
-*Note: The core features of Void are currently under development.*
+- **Blur All Mode (Default):** Automatically blurs the entire file content to prevent accidental leaks during presentations.
+- **Smart Whitelist:** Automatically keeps safe files readable (e.g., `README.md`, logs, `package-lock.json`), even in "Blur All" mode.
+- **Secret Detection:** Uses regex to specifically identify and blur API keys, tokens, and passwords if you prefer "Secrets Only" mode.
+- **Secure Vault:** Copy blurred secrets to your clipboard safely without revealing them on screen.
+- **Status Bar Toggle:** Quickly enable/disable Void with a single click on the "Eye" icon.
+- **Custom Patterns:** Add your own regex rules to blur proprietary internal tokens.
 
-## Getting Started
+## ⚙️ Configuration
 
-Once the extension is released, you will be able to install it from the Visual Studio Code Marketplace.
+You can customize Void in your VS Code `settings.json`:
 
-## Known Issues
+| Setting | Default | Description |
+| :--- | :--- | :--- |
+| `void.blurMode` | `"all"` | Choose `"all"` to blur everything or `"secrets"` to blur only detected keys. |
+| `void.excludedFiles` | `["**/*.md", ...]` | Glob patterns for files that should **NEVER** be blurred. |
+| `void.customPatterns` | `[]` | Add your own regex patterns (e.g., `"MY_COMPANY_KEY_\\w+"`). |
+| `void.filesToScan` | `["**/.env*", ...]` | Files to scan when in `"secrets"` mode. |
 
-There are no known issues at this time.
+## 🛡️ Usage
 
-## Release Notes
+1. **Toggle On/Off:** Click the **Eye Icon** `$(eye)` in the bottom right status bar.
+2. **Copy a Secret:** Hover over any blurred text and click **"Copy to Clipboard"**.
+3. **Customize:** Go to Settings (`Cmd+,`) -> Search "Void".
 
-This section will be updated as new versions are released.
+## 📦 Installation
 
-## Contributing
+Search for **"Void"** in the VS Code Marketplace and click Install.
 
-Contributions are welcome! If you have ideas for new features, or if you've found a bug, please open an issue on our GitHub repository.
+## 🔒 Security Note
+
+Void runs entirely locally. No data is ever sent to a server. Secrets are stored in memory only while the session is active.
 
 ---
-
-**Enjoy a more secure coding experience with Void!**
+*Current Version: v0.0.5*
