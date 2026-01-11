@@ -1,30 +1,28 @@
 # Change Log
 
-All notable changes to the "vscode-void" extension will be documented in this file.
+All notable changes to the "Void" extension will be documented in this file.
 
-Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
-
-## [0.0.3] - 2026-01-07
-
+## [0.0.5] - 2026-01-11
 ### Added
-- **Status Bar Toggle:** Added a clickable "Eye" icon in the status bar to globally enable/disable Void.
-- **Secure Vault Architecture:** Implemented an in-memory map to store secrets. When copying a secret, the extension now references a temporary token ID instead of exposing the raw secret in the command URI.
-- **Smart Configuration:** Added `void.filesToScan` setting. Users can now configure Void to scan specific file patterns (e.g., `**/*.json`, `**/*.js`) beyond just `.env`.
-- **Hover Tooltip:** Added a "Hidden Value" tooltip when hovering over blurred text.
-- **Copy-to-Clipboard:** Added a secure `[Copy]` button inside the hover tooltip.
-
-### Changed
-- **Performance:** Optimized the scanning engine using `WeakMap` caching to reduce CPU usage when switching tabs.
-- **Visuals:** Updated the blur effect to use a "Frosted Glass" style (transparent color with text-shadow) for better aesthetics.
-- **Startup:** Adjusted activation events to ensure secrets are blurred immediately upon window load (preventing "flash" of visible text).
+- **Smart Whitelist:** Introduced `void.excludedFiles` setting. Files matching these patterns (e.g., `README.md`, `package-lock.json`) are now readable by default, even in "Blur All" mode.
+- **Configuration Listener:** The extension now dynamically updates whitelisted files without requiring a reload.
 
 ### Fixed
-- Fixed an issue where JSON keys wrapped in quotes (e.g., `"API_KEY":`) were not being detected by the regex scanner.
+- Fixed an issue where documentation and log files were unreadable in the default configuration.
 
-## [0.0.2]
+## [0.0.4] - 2026-01-11
+### Added
+- **Blur All Mode:** New default setting (`void.blurMode: "all"`) that blurs the entire file content for maximum privacy.
+- **Custom Patterns:** Users can now define their own regex rules in `void.customPatterns`.
+- **Status Bar Toggle:** Added an interactive "Eye" icon in the status bar to quickly enable/disable the extension.
+- **Secure Vault:** Implemented an in-memory vault for secret storage, ensuring copied secrets are never exposed in command arguments.
 
-- Internal release for testing the "Blur Engine" core logic.
+### Changed
+- **Build System:** Migrated from Webpack to standard TypeScript (`tsc`) for cleaner builds and easier debugging.
+- **Architecture:** Refactored secret detection to use a `Map` based storage instead of direct string manipulation.
 
-## [0.0.1]
-
-- Initial scaffold and release.
+## [0.0.3] - 2026-01-05
+### Added
+- Initial release of Void.
+- Basic secret scanning for `.env` files.
+- "Frosted Glass" CSS decoration style.
