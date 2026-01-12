@@ -31,4 +31,4 @@ You can customize Void in your VS Code settings:
 This is an open-source project. Contributions and bug reports are welcome to help improve the tool for the community. Please submit any issues or feature requests via the GitHub repository.
 
 ---
-**Void** -- Built with privacy in mind.
+**Void** - Built with privacy in mind.
