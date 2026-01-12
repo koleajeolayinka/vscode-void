@@ -26,9 +26,9 @@ You can customize Void in your VS Code settings:
 2. **Copy:** Hover over any blurred text and select "Copy to Clipboard" to retrieve the value safely.
 3. **Customize:** Access the Extension Settings to modify blur behavior and whitelists.
 
-## Feedback and Contributions
+## Support and Contributions
 
-Void is an open-source project. We value your feedback to make this tool better for the developer community. If you have suggestions or encounter bugs, please submit them via the GitHub Issues page.
+This is an open-source project. Contributions and bug reports are welcome to help improve the tool for the community. Please submit any issues or feature requests via the GitHub repository.
 
 ---
-**Void** — Privacy for Developers.
+**Void** -- Built with privacy in mind.
