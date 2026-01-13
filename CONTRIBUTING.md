@@ -1,59 +1,18 @@
 # Contributing to Void
 
-First off, thank you for considering contributing to Void! It's people like you that make the open-source community such an amazing place to learn, inspire, and create.
+Thank you for your interest in improving Void. Contributions from the community are welcome to help improve the project.
 
-Void is a "Zero-Trust" privacy tool for VS Code, and we welcome contributions from everyone, whether you're fixing a typo, adding a new file type for detection, or refactoring the core vault architecture.
+## Development Workflow
 
-## 🛠 Getting Started
+1. **Fork the Repository:** Create a copy of the repository to your own GitHub account.
+2. **Create a Branch:** Please create a specific branch for your feature or fix (e.g., `feature/improved-blur` or `fix/startup-bug`).
+3. **Commit Changes:** Ensure your code compiles and follows the existing style.
+4. **Pull Request:** Submit a Pull Request to the `main` branch for review.
 
-### Prerequisites
-You need the following installed on your machine:
-* [Node.js](https://nodejs.org/) (v16 or higher)
-* [Git](https://git-scm.com/)
-* [VS Code](https://code.visualstudio.com/)
+## Guidelines
 
-### Setting up the Environment
-1.  **Fork** the repository on GitHub.
-2.  **Clone** your fork to your local machine:
-    ```bash
-    git clone https://github.com/koleajeolayinka/vscode-void.git
-    cd vscode-void
-    ```
-3.  **Install dependencies**:
-    ```bash
-    npm install
-    ```
+* **Bug Reports:** Please use the Issues tab to report bugs. Include steps to reproduce the issue.
+* **Feature Requests:** Open an Issue to discuss the feature before writing code to ensure it aligns with the project goals.
+* **Dependencies:** Please avoid adding unnecessary dependencies to keep the extension lightweight.
 
-### 🏃‍♂️ Running the Extension (Debug Mode)
-VS Code extensions are unique because they run inside a special instance of VS Code called the "Extension Development Host."
-
-1.  Open the project in VS Code: `code .`
-2.  Press **F5** (or click "Run and Debug" on the left sidebar).
-3.  A **new VS Code window** will open. This is the "Host" window where the extension is active.
-4.  Open a file (like a `.env` file) in that new window to test the blurring functionality.
-5.  **Reloading:** If you make changes to the code, go to the debug toolbar in the main window and click the green "Restart" icon (or Press `Ctrl+Shift+F5`).
-
-## 📂 Project Structure
-* **`src/extension.ts`**: The entry point. Handles activation and registering commands.
-* **`src/vault.ts`** (or similar): Contains the logic for the secure memory storage.
-* **`package.json`**: Defines the extension settings, activation events, and dependencies.
-
-## 🐛 Found a Bug?
-If you find a bug, please create an Issue on GitHub. Include:
-* Your OS and VS Code version.
-* Steps to reproduce the bug.
-* Expected vs. Actual behavior.
-
-## 💡 Want to Add a Feature?
-1.  Check the **Issues** tab to see if anyone is already working on it.
-2.  If it's a big change, open an Issue first to discuss it.
-3.  If it's small (like adding support for `.xml` files), feel free to open a Pull Request!
-
-##  pull Request Process
-1.  Create a new branch: `git checkout -b feature/my-new-feature`
-2.  Make your changes and commit them.
-3.  Push to your fork: `git push origin feature/my-new-feature`
-4.  Submit a Pull Request!
-
-## 📜 License
-By contributing, you agree that your contributions will be licensed under the MIT License.
+Thank you for helping build Void.
