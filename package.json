@@ -25,7 +25,7 @@
       {
         "command": "void.copySecret",
         "title": "Copy Secret to Clipboard",
-        "enablement": "false" 
+        "enablement": "false"
       }
     ],
     "configuration": {
@@ -37,8 +37,8 @@
             "secrets",
             "all"
           ],
-          "default": "all",
-          "description": "Choose 'secrets' to blur only detected patterns, or 'all' to blur the entire file content."
+          "default": "secrets",
+          "description": "Choose 'all' to blur the entire file, or 'secrets' to hide only sensitive values (keeping keys visible)."
         },
         "void.excludedFiles": {
           "type": "array",
@@ -68,14 +68,6 @@
             "**/*.config"
           ],
           "description": "Glob patterns for files that should be protected when in 'secrets' mode."
-        },
-        "void.customPatterns": {
-          "type": "array",
-          "items": {
-            "type": "string"
-          },
-          "default": [],
-          "description": "Array of custom Regex patterns to blur. Example: \"SECRET_\\w+\""
         }
       }
     }
