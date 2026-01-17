@@ -2,6 +2,9 @@
 
 All notable changes to the "Void" extension will be documented in this file.
 
+## [0.0.6]
+- **Fixed:** Extension icon was missing in the marketplace listing. :)
+
 ## [0.0.5] - 2026-01-17
 ### Added
 - **Smart Key Visibility:** In "Secrets Mode", variable names (e.g., `STRIPE_KEY`) now remain visible while only the values are blurred.
