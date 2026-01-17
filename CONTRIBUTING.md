@@ -5,7 +5,9 @@ Thank you for your interest in improving Void. Contributions from the community 
 ## Development Workflow
 
 1. **Fork the Repository:** Create a copy of the repository to your own GitHub account.
-2. **Create a Branch:** Please create a specific branch for your feature or fix (e.g., `feature/improved-blur` or `fix/startup-bug`).
+2. **Create a Branch:** Please create a specific branch for your feature or fix. 
+   - **Good:** `feature/improved-blur`, `fix/startup-bug`
+   - **Funny (but allowed):** `feature/john-cena` (you can't see me), `feature/everywhere-blur` (no loose guard!).
 3. **Commit Changes:** Ensure your code compiles and follows the existing style.
 4. **Pull Request:** Submit a Pull Request to the `main` branch for review.
 
