@@ -1,13 +1,13 @@
 # Void
 
-**Void** is a privacy-focused extension for Visual Studio Code designed to obscure sensitive information within your editor. Whether you are screen-sharing, live streaming, or working in a public environment, Void ensures your code and secrets remain private.
+**Void** is a privacy-focused extension for Visual Studio Code designed to obscure sensitive information within your editor. Whether you are screen-sharing, live streaming, or working in a public environment, Void ensures your secrets remain private while keeping your context clear.
 
 ## Key Features
 
-- **Blur All Mode:** Automatically blurs the entire file content to prevent accidental data leaks during presentations.
-- **Smart Whitelist:** Automatically keeps safe files readable (such as documentation and logs) even when Blur Mode is active.
-- **Secret Detection:** Uses regex patterns to identify and obscure API keys, tokens, and passwords specifically.
-- **Secure Vault:** Allows you to copy obscured secrets to your clipboard without revealing them on the screen.
+- **Smart Secret Detection:** Automatically detects API keys, tokens, and passwords, blurring *only the values* while keeping the variable names visible (e.g., `STRIPE_KEY = 🔒`).
+- **Blur All Mode:** Option to blur the entire file content for maximum privacy during presentations.
+- **Smart Whitelist:** Automatically keeps safe files readable (such as documentation and logs) even when privacy mode is active.
+- **Secure Copy:** Hover over any hidden secret to safely copy the value to your clipboard without ever revealing it on screen.
 - **Status Bar Toggle:** Quickly enable or disable the extension via the status bar.
 
 ## Configuration
@@ -16,15 +16,14 @@ You can customize Void in your VS Code settings:
 
 | Setting | Default | Description |
 | :--- | :--- | :--- |
-| `void.blurMode` | `"all"` | Choose "all" to blur everything or "secrets" to blur only detected keys. |
-| `void.excludedFiles` | `["**/*.md", ...]` | Patterns for files that should remain readable. |
-| `void.customPatterns` | `[]` | Add custom regex patterns to blur specific internal tokens. |
+| `void.blurMode` | `"secrets"` | Choose `"secrets"` to hide only sensitive values, or `"all"` to blur the entire file. |
+| `void.excludedFiles` | `["**/*.md", ...]` | Glob patterns for files that should remain readable (e.g., READMEs, Lock files). |
 
 ## Usage
 
-1. **Toggle:** Click the "Eye" icon in the bottom right status bar to turn Void on or off.
-2. **Copy:** Hover over any blurred text and select "Copy to Clipboard" to retrieve the value safely.
-3. **Customize:** Access the Extension Settings to modify blur behavior and whitelists.
+1. **Toggle:** Click the **Eye Icon** `$(eye)` in the bottom right status bar to turn Void on or off.
+2. **Copy:** Hover over any blurred secret and click the **Copy** button to retrieve the value safely.
+3. **Customize:** Access the Extension Settings (`Cmd+,`) to modify excluded files or switch blur modes.
 
 ## Support and Contributions
 
