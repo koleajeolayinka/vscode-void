@@ -3,7 +3,7 @@
   "displayName": "Void",
   "description": "Securely blur sensitive information (API keys, tokens, .env files) in your editor.",
   "version": "0.0.5",
-  "publisher": "your-publisher-name",
+  "publisher": "koleajeolayinka",
   "engines": {
     "vscode": "^1.80.0"
   },
